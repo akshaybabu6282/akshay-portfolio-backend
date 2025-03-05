@@ -21,6 +21,9 @@ app.use(cors({
     credentials: true,
 }));
 
+console.log("CORS allowed origins:", process.env.PORTFOLIO_URL, process.env.DASHBOARD_URL);
+
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

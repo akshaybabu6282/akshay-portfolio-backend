@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 
-const userScheem = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     fullName: {
         type: String,
         required: [true, "Name Required"],
@@ -60,7 +60,7 @@ const userScheem = new mongoose.Schema({
 });
 
 //For Hashing Password
-userScheem.pre("save", async function (next) {
+userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) {
         next();
     }
@@ -68,18 +68,18 @@ userScheem.pre("save", async function (next) {
 });
 
 //For Comparing Password With Hashed Password
-userScheem.methods.comparePassword = async function (enteredPassword) {
+userSchema.methods.comparePassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
 
 //Generating Json Web Token
-userScheem.methods.generateJsonWebToken = function () {
+userSchema.methods.generateJsonWebToken = function () {
     return jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY, {
         expiresIn: process.env.JWT_EXPIRES,
     });
 };
 
-userScheem.methods.getResetPasswordToken = function () {
+userSchema.methods.getResetPasswordToken = function () {
     const resetToken = crypto.randomBytes(20).toString("hex");
 
     this.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
@@ -88,4 +88,4 @@ userScheem.methods.getResetPasswordToken = function () {
     return resetToken
 }
 
-export const User = mongoose.model("User", userScheem);
+export const User = mongoose.model("User", userSchema);
